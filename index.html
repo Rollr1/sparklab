@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>SparkLab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<style>
+/* Layout: one phone-width column (max 560px) with a sticky top bar and a fixed bottom nav; lessons take over the column. */
+:root{
+  --bg:#eef3f8; --card:#ffffff; --ink:#1b2838; --muted:#5a6a7e; --line:#d6e0ea;
+  --orange:#ff7a2f; --orange-d:#d85f17; --teal:#0fa38f; --teal-d:#0a7d6d; --teal-soft:#dff5f1;
+  --sun:#ffc83d; --berry:#e5484d; --berry-soft:#fde8e8; --navy:#24364d; --locked:#c5d0dc;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+.app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:96px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:10px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.01em;margin-right:auto}
+.brand b{color:var(--orange)}
+.pill{display:flex;align-items:center;gap:5px;font-weight:600;font-size:15px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 11px;font-variant-numeric:tabular-nums}
+.pill svg{width:18px;height:18px}
+.iconbtn{background:var(--card);border:2px solid var(--line);border-radius:12px;width:40px;height:40px;display:grid;place-items:center;padding:0}
+.iconbtn svg{width:20px;height:20px}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:2px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.nav-in{max-width:560px;margin:0 auto;display:flex}
+.nav button{flex:1;background:none;border:0;padding:10px 0 12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;font-weight:600;color:var(--muted)}
+.nav button svg{width:26px;height:26px}
+.nav button[aria-current="true"]{color:var(--orange)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:16px;padding:14px 20px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.02em;background:var(--orange);color:#fff;box-shadow:0 4px 0 var(--orange-d);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--orange-d)}
+.btn[disabled]{background:var(--locked);box-shadow:0 4px 0 #a9b6c4;cursor:not-allowed}
+.btn.teal{background:var(--teal);box-shadow:0 4px 0 var(--teal-d)}
+.btn.berry{background:var(--berry);box-shadow:0 4px 0 #b3343a}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+.btn.small{font-size:16px;padding:10px 14px;border-radius:12px}
+.btn.wide{width:100%}
+
+/* course map */
+.hero{background:var(--navy);color:#fff;border-radius:22px;padding:18px;display:flex;gap:14px;align-items:center;margin-top:4px}
+.hero .mascot{width:76px;height:76px;flex:none}
+.hero h1{font-size:24px}
+.hero p{color:#c8d6e6;font-size:14px;margin-top:2px}
+.unit{margin-top:22px;border-radius:20px;background:var(--orange);color:#fff;padding:14px 16px;box-shadow:0 4px 0 var(--orange-d)}
+.unit small{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:600;opacity:.9}
+.unit h2{font-size:23px}
+.unit p{font-size:14px;opacity:.95}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:18px;padding-block:26px 10px}
+.node{position:relative;width:76px;height:76px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--teal);box-shadow:0 6px 0 var(--teal-d);color:#fff}
+.node svg{width:34px;height:34px}
+.node.todo{background:var(--card);color:var(--muted);box-shadow:0 6px 0 var(--line);border:3px solid var(--line)}
+.node.next{background:var(--orange);box-shadow:0 6px 0 var(--orange-d);color:#fff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{outline:0 solid rgba(255,122,47,.35)}50%{outline:10px solid rgba(255,122,47,.12)}}
+.nodewrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.nodewrap .lbl{font-weight:600;font-size:14px;text-align:center;max-width:170px}
+.nodewrap .xp{font-size:12px;color:var(--muted)}
+.bubble{position:absolute;top:-34px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--orange);border:2px solid var(--line);font-family:var(--display);font-weight:800;font-size:14px;padding:1px 10px;border-radius:10px;white-space:nowrap;letter-spacing:.06em}
+.soon-h{margin-top:20px;font-size:20px}
+.soon-sub{color:var(--muted);font-size:14px;margin-top:2px}
+.soon{display:grid;gap:10px;margin-top:12px}
+.soon .c{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.soon .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--bg);color:var(--muted)}
+.soon .ic svg{width:24px;height:24px}
+.soon h3{font-size:17px}
+.soon p{font-size:13.5px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--bg);color:var(--muted);border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+
+/* lesson */
+.lesson{display:flex;flex-direction:column;min-height:calc(100vh - 120px)}
+.lhead{display:flex;align-items:center;gap:12px;padding-block:14px}
+.bar{flex:1;height:16px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .35s}
+.lbody{flex:1;display:flex;flex-direction:column;gap:16px;padding-bottom:20px}
+.kicker{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--orange)}
+.lbody h2{font-size:26px}
+.lbody .txt{font-size:16.5px;max-width:62ch}
+.lbody .txt b{color:var(--navy)}
+.say{display:flex;gap:10px;align-items:flex-start}
+.say .mascot{width:56px;height:56px;flex:none}
+.say .sp{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 14px;font-size:15.5px;position:relative;min-width:0}
+.art{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px;display:grid;place-items:center}
+.art svg{width:100%;max-width:340px;height:auto}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:13px 14px;font-size:16px;line-height:1.35}
+.opt[aria-pressed="true"]{border-color:#7cc7f0;background:#eaf6fd}
+.opt.right{border-color:var(--teal);background:var(--teal-soft)}
+.opt.wrong{border-color:var(--berry);background:var(--berry-soft)}
+.lfoot{position:sticky;bottom:0;padding-block:12px calc(12px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.fb{border-radius:16px;padding:12px 14px;margin-bottom:10px;font-size:15px}
+.fb h3{font-size:20px}
+.fb.good{background:var(--teal-soft);color:var(--teal-d)}
+.fb.bad{background:var(--berry-soft);color:#a6262b}
+.fb p{color:var(--ink)}
+
+/* order */
+.slots{display:grid;gap:8px}
+.slot{min-height:50px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;gap:10px;padding:6px 10px;color:var(--muted);font-size:14px}
+.slot .n{width:26px;height:26px;border-radius:50%;background:var(--line);color:var(--ink);display:grid;place-items:center;font-weight:600;font-size:13px;flex:none}
+.slot button{flex:1;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:7px 10px;font-size:15px}
+.slot.right button{border-color:var(--teal);background:var(--teal-soft)}
+.slot.wrong button{border-color:var(--berry);background:var(--berry-soft)}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:8px 12px;font-size:15px}
+.chip.mini{font-size:13.5px;padding:5px 10px;border-bottom-width:3px}
+
+/* prompt coach */
+textarea,input[type=text],input[type=password]{width:100%;font:inherit;font-size:16px;border:2px solid var(--line);border-radius:14px;padding:12px;background:var(--card);color:var(--ink);resize:vertical}
+.score{display:flex;gap:6px;align-items:center;font-family:var(--display);font-weight:700;font-size:20px}
+.checks{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.checks li{display:flex;gap:8px;align-items:flex-start;font-size:15px}
+.checks .d{width:22px;height:22px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;margin-top:1px}
+.checks .y{background:var(--teal)} .checks .n{background:var(--locked)}
+.coach{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+.better{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:15px}
+.aistat{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.aistat i{width:8px;height:8px;border-radius:50%;background:var(--locked);display:inline-block}
+.aistat.on i{background:var(--teal)}
+
+/* 3d viewer */
+.viewer{position:relative;width:100%;max-width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;background:linear-gradient(#dbe8f4,#f7fafc);border:2px solid var(--line);touch-action:none}
+.viewer canvas{display:block;width:100%!important;height:100%!important}
+.viewer .hint{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.8);padding:2px 8px;border-radius:8px;pointer-events:none}
+.viewer .hud{position:absolute;right:10px;top:10px;font-size:13px;font-weight:600;background:rgba(255,255,255,.9);padding:4px 10px;border-radius:10px;font-variant-numeric:tabular-nums}
+.specs{display:flex;flex-wrap:wrap;gap:6px}
+.spec{font-size:13px;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:3px 9px;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0}
+.log{display:grid;gap:4px;font-size:14px}
+.log div{background:var(--teal-soft);color:var(--teal-d);border-radius:10px;padding:6px 10px}
+.log div.warn{background:#fff4d6;color:#8a5a00}
+
+/* slicer */
+.sl{display:grid;gap:4px}
+.sl label{display:flex;justify-content:space-between;font-weight:600;font-size:15px}
+.sl label span{font-variant-numeric:tabular-nums;color:var(--orange)}
+input[type=range]{width:100%;accent-color:var(--orange)}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meter{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.meter small{display:block;color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
+.meter b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.meter .mb{height:8px;border-radius:9px;background:var(--line);margin-top:6px;overflow:hidden}
+.meter .mb i{display:block;height:100%;background:var(--teal)}
+.toggle{display:flex;align-items:center;gap:10px;font-weight:600}
+.toggle input{width:22px;height:22px;accent-color:var(--orange)}
+
+/* done screen */
+.done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:30px}
+.done .mascot{width:130px;height:130px}
+.done h2{font-size:32px}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat{border:2px solid var(--line);background:var(--card);border-radius:16px;padding:10px 16px;min-width:100px}
+.stat small{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat b{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.stat.xp b{color:#c48a00} .stat.st b{color:var(--orange)} .stat.ac b{color:var(--teal)}
+
+/* parent view */
+.pv{display:grid;gap:14px;padding-top:4px}
+.pv .card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px}
+.pv h1{font-size:28px}
+.pv h2{font-size:20px;margin-bottom:8px}
+.pv .sub{color:var(--muted);font-size:14.5px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.kpi{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px}
+.kpi small{display:block;color:var(--muted);font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.kpi b{font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:13px;color:var(--muted)}
+.skills{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.skills li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.skills .d{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;background:var(--locked);margin-top:1px}
+.skills li.got .d{background:var(--teal)}
+.skills li:not(.got){color:var(--muted)}
+.skills small{display:block;color:var(--muted);font-size:13px}
+.week{display:flex;align-items:flex-end;gap:8px;height:110px;padding-top:10px}
+.week div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted);height:100%;justify-content:flex-end}
+.week i{display:block;width:100%;max-width:34px;background:var(--teal);border-radius:7px 7px 3px 3px;min-height:3px}
+.week i.zero{background:var(--line)}
+.starters{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px}
+.quote{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:15px;font-style:italic}
+.namebox{display:flex;gap:8px;align-items:center;margin-top:8px}
+.namebox input{max-width:200px;padding:8px 10px}
+.why{display:grid;gap:10px;margin:0;padding:0;list-style:none;font-size:15px}
+.why b{display:block;font-family:var(--display);font-size:17px}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(27,40,56,.55);display:flex;align-items:flex-end;justify-content:center;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));display:grid;gap:12px;max-height:90vh;overflow:auto}
+.sheet h2{font-size:24px}
+.sheet .sub{color:var(--muted);font-size:14px}
+.center{text-align:center;justify-items:center}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+@media (prefers-reduced-motion:reduce){.node.next{animation:none}*{transition:none!important}}
+</style>
+
+<div class="app" id="app"></div>
+<nav class="nav" id="nav"><div class="nav-in">
+  <button id="nav-learn" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Learn</button>
+  <button id="nav-parent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.2"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 20c.2-2.6 1.5-4.5 4-4.5 1.8 0 3 1 3.5 2.6"/></svg>Parents</button>
+</div></nav>
+<canvas id="confetti"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+/* ============ helpers ============ */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const todayKey = (d = new Date()) => d.toISOString().slice(0, 10);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ============ icons + mascot ============ */
+const IC = {
+  flame: '<svg viewBox="0 0 24 24"><path fill="#ff7a2f" d="M12 2s5 4.3 5 9.5a5 5 0 0 1-10 0c0-1.8.8-3.3 1.6-4.3.2 1.5 1 2.6 2 2.8C10 7 12 2 12 2z"/><path fill="#ffc83d" d="M12 21a3.6 3.6 0 0 1-3.6-3.6c0-2.2 2.2-4 3.6-5.6 1.4 1.6 3.6 3.4 3.6 5.6A3.6 3.6 0 0 1 12 21z"/></svg>',
+  gem: '<svg viewBox="0 0 24 24"><path fill="#ffc83d" d="M6 3h12l4 6-10 12L2 9z"/><path fill="#ffe08a" d="M6 3l3 6h6l3-6z"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="#5a6a7e" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M4.2 6.2l2.1 2.1M17.7 15.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 17.8l2.1-2.1M17.7 8.3l2.1-2.1"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="#5a6a7e" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg>',
+  layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 12 10 5 10-5M2 16l10 5 10-5"/></svg>',
+  route: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.5 5H15a3.5 3.5 0 0 1 0 7H9a3.5 3.5 0 0 0 0 7h7.5"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5" stroke-linecap="round"/></svg>',
+  cube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2.5 21 7v10l-9 4.5L3 17V7z"/><path d="m3 7 9 4.5L21 7M12 11.5v10"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M5 20h14M8 16h8l-1-6H9z"/><path d="M12 10V4M9 4h6" stroke-linecap="round"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4" stroke-linecap="round"/></svg>',
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.7-1.5-1.8-1.5-3s1-2 2.5-2H18a3 3 0 0 0 3-3c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11" r="1.2" fill="currentColor"/><circle cx="10.5" cy="7.3" r="1.2" fill="currentColor"/><circle cx="15" cy="7.5" r="1.2" fill="currentColor"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h14v-4"/></svg>',
+  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/></svg>',
+  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.3L21 10l-6.8 1.9L12 18l-2.2-6.1L3 10l6.8-1.7z"/></svg>'
+};
+function mascot(mood = "happy") {
+  const mouth = mood === "wow" ? '<ellipse cx="50" cy="66" rx="7" ry="8" fill="#1b2838"/>' :
+    mood === "think" ? '<path d="M42 67h16" stroke="#1b2838" stroke-width="4" stroke-linecap="round"/>' :
+    '<path d="M39 63q11 11 22 0" stroke="#1b2838" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
+  return `<svg class="mascot" viewBox="0 0 100 100" aria-hidden="true">
+    <line x1="50" y1="20" x2="50" y2="8" stroke="#24364d" stroke-width="4"/>
+    <circle cx="50" cy="8" r="6.5" fill="#ffc83d"/>
+    <rect x="10" y="40" width="9" height="20" rx="4" fill="#24364d"/><rect x="81" y="40" width="9" height="20" rx="4" fill="#24364d"/>
+    <rect x="16" y="20" width="68" height="62" rx="20" fill="#ff7a2f"/>
+    <rect x="23" y="29" width="54" height="44" rx="14" fill="#fff"/>
+    <circle cx="39" cy="48" r="6" fill="#1b2838"/><circle cx="61" cy="48" r="6" fill="#1b2838"/>
+    <circle cx="41" cy="46" r="2" fill="#fff"/><circle cx="63" cy="46" r="2" fill="#fff"/>
+    ${mouth}
+    <rect x="34" y="86" width="32" height="8" rx="4" fill="#24364d"/>
+  </svg>`;
+}
+
+/* ============ state ============ */
+const DEFAULT_DESIGN = { type: "keychain", shape: "rect", size: 50, thick: 4, hole: true, color: "#ff7a2f", height: 95, wall: 2.4, sides: 64, angle: 65, width: 75 };
+const fresh = () => ({ name: "", xp: 0, streak: 0, lastDay: null, done: {}, correct: 0, answered: 0, minutes: {}, prompt: null, design: { ...DEFAULT_DESIGN }, sample: false });
+let S = Object.assign(fresh(), store.get("sparklab", {}));
+const save = () => store.set("sparklab", S);
+let apiKey = store.get("sparklab_key", "");
+
+/* ============ live AI (artifact sample capability, optional API key, else offline) ============ */
+let sampleFn = null;
+if (window.claude && typeof window.claude.use === "function") {
+  window.claude.use("sample").then(f => { sampleFn = f; refreshAiStatus(); }).catch(() => {});
+}
+function aiMode() { return sampleFn ? "claude" : apiKey ? "key" : "offline"; }
+function refreshAiStatus() { document.querySelectorAll(".aistat").forEach(el => { el.className = "aistat" + (aiMode() !== "offline" ? " on" : ""); el.lastChild.textContent = aiMode() !== "offline" ? " Live AI coach on" : " Offline coach"; }); }
+function aiStatusHtml() { return `<span class="aistat${aiMode() !== "offline" ? " on" : ""}"><i></i> ${aiMode() !== "offline" ? "Live AI coach on" : "Offline coach"}</span>`; }
+async function askAI(prompt) {
+  if (sampleFn) {
+    const r = await sampleFn(prompt, { modelTier: "quick" });
+    return r.text;
+  }
+  if (apiKey) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-haiku-5-5", max_tokens: 500, messages: [{ role: "user", content: prompt }] })
+    });
+    if (!res.ok) throw new Error("API " + res.status);
+    const j = await res.json();
+    return j.content.map(c => c.text || "").join("");
+  }
+  throw new Error("offline");
+}
+
+/* ============ offline prompt coach ============ */
+const CRITERIA = [
+  { key: "what", label: "Says what the object is", tip: "Name the object clearly, like \"a pencil holder\".", re: /(holder|cup|container|organi[sz]er|pencil|pen|keychain|stand|box|tray|case)/i },
+  { key: "size", label: "Gives exact sizes (mm or cm)", tip: "Add numbers with units, like \"80 mm wide and 100 mm tall\". AI can't guess your desk!", re: /\d+(\.\d+)?\s*(mm|cm|millimet|centimet|inch|in\b)/i },
+  { key: "shape", label: "Describes shape and details", tip: "Describe the look: round or hexagon? Dividers? A pattern on the side?", re: /(round|circle|circular|square|hex|octagon|shape|slot|compartment|section|divider|pattern|lid|handle|curv|wavy|star|heart|stripe|texture|diameter)/i },
+  { key: "why", label: "Explains what it's for", tip: "Say what it's for, like \"to hold 10 pencils and 2 markers on my desk\".", re: /(\bfor\b|so that|so it|to hold|to fit|to keep|desk|fits?\b|store)/i },
+  { key: "print", label: "Thinks about printing", tip: "Add print rules: \"flat bottom, walls at least 2 mm thick, no supports needed\".", re: /(flat|support|thick|sturdy|strong|wall|print|overhang|stable|won't tip|layer)/i }
+];
+function offlineCoach(text) {
+  const hits = CRITERIA.map(c => ({ ...c, ok: c.re.test(text) }));
+  const score = hits.filter(h => h.ok).length;
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const praise = score >= 4 ? "That's a maker-level prompt. An AI design tool would know exactly what to build." :
+    score >= 2 ? "Good start! A couple more details and the AI will nail it." :
+    words < 6 ? "Short prompts make the AI guess. Let's give it more to work with." : "You've got an idea going. Now let's make it specific.";
+  const missing = hits.filter(h => !h.ok);
+  const improved = "Design a round pencil holder for my desk, 80 mm wide and 100 mm tall, with 3 dividers inside for pencils, markers and scissors. Give it a wavy pattern on the outside, a flat bottom, and walls at least 2 mm thick so it prints without supports.";
+  return { score, hits, praise, tips: missing.slice(0, 2).map(m => m.tip), improved };
+}
+async function coachPrompt(text) {
+  const base = offlineCoach(text);
+  if (aiMode() === "offline") return { ...base, source: "offline" };
+  const prompt = `You are Bolt, a friendly coach in a learning app for kids aged 10-15. A kid was asked to write a prompt for an AI 3D-design tool to make a pencil holder for their desk. Their prompt is between the markers.
+<<<${text.slice(0, 800)}>>>
+Score it 0-5, one point each for: names the object, gives exact sizes with units, describes shape/details, says what it's for, mentions printability (flat base, wall thickness, supports).
+Reply with ONLY a JSON object: {"score":number,"praise":"one short encouraging sentence about something specific they did well","tips":["one or two short, concrete tips"],"improved":"their prompt rewritten to be excellent, keeping their own ideas, under 60 words"}.
+Keep language simple and kind. If the text is off-topic or inappropriate, score 0 and gently ask them to describe a pencil holder.`;
+  try {
+    const raw = await askAI(prompt);
+    const j = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
+    return { score: clamp(Math.round(+j.score || 0), 0, 5), hits: base.hits, praise: String(j.praise || base.praise), tips: (j.tips || base.tips).slice(0, 2).map(String), improved: String(j.improved || base.improved), source: "ai" };
+  } catch (e) {
+    return { ...base, source: "offline" };
+  }
+}
+
+/* ============ 3D design: interpret words → parameters ============ */
+const COLORS = { red: "#e5484d", orange: "#ff7a2f", yellow: "#ffc83d", gold: "#e0a526", green: "#2fb36d", lime: "#9ad13b", teal: "#0fa38f", blue: "#3b7ddd", navy: "#24364d", purple: "#8b5cf6", pink: "#f472b6", white: "#f4f4f4", black: "#2a2a2a", gray: "#9aa5b1", grey: "#9aa5b1" };
+const BED = 220;
+function interpret(text, prev) {
+  const t = " " + text.toLowerCase() + " ";
+  let p = { ...prev };
+  const notes = [], warns = [];
+  const type = /key ?chain|keyring|key ring|\btag\b/.test(t) && !/key ?ring hole|hole/.test(t) ? "keychain" :
+    /\bstand\b|phone|tablet/.test(t) ? "stand" : /\bcup\b|pencil|holder|\bpen\b|\bpot\b|vase/.test(t) ? "cup" : /key ?chain/.test(t) ? "keychain" : null;
+  if (type && type !== p.type) {
+    p = { ...DEFAULT_DESIGN, color: p.color, type };
+    if (type === "cup") { p.size = 75; p.thick = 2.4; }
+    if (type === "stand") { p.thick = 5; }
+    notes.push(`Switched to a ${type === "cup" ? "pencil cup" : type === "stand" ? "phone stand" : "keychain"}`);
+  }
+  // explicit numbers with units
+  const numRe = /(\d+(?:\.\d+)?)\s*(mm|millimet\w*|cm|centimet\w*)/g;
+  let m;
+  while ((m = numRe.exec(t))) {
+    let v = parseFloat(m[1]) * (m[2].startsWith("c") ? 10 : 1);
+    const around = t.slice(Math.max(0, m.index - 18), m.index + m[0].length + 18);
+    if (/thick|wall/.test(around)) { if (p.type === "cup") { p.wall = v; notes.push(`Walls ${v} mm thick`); } else { p.thick = v; notes.push(`Thickness ${v} mm`); } }
+    else if (/tall|high|height/.test(around) && p.type === "cup") { p.height = v; notes.push(`Height ${v} mm`); }
+    else if (p.type === "stand") { p.width = v; notes.push(`Width ${v} mm`); }
+    else { p.size = v; notes.push(`${p.type === "cup" ? "Diameter" : "Size"} ${v} mm`); }
+  }
+  const deg = t.match(/(\d+)\s*(°|deg|degree)/);
+  if (deg) { p.angle = +deg[1]; notes.push(`Angle ${p.angle}°`); }
+  // relative words
+  const scaleMain = (f, word) => { if (p.type === "stand") p.width = Math.round(p.width * f); else p.size = Math.round(p.size * f); notes.push(`${word} (${p.type === "stand" ? p.width : p.size} mm)`); };
+  if (!/\d\s*(mm|cm)/.test(t)) {
+    if (/\b(bigger|larger|huge|giant|wider)\b/.test(t)) scaleMain(1.3, "Bigger");
+    if (/\b(smaller|tiny|mini|little)\b/.test(t)) scaleMain(0.75, "Smaller");
+    if (/\btaller\b/.test(t)) { p.height = Math.round(p.height * 1.25); notes.push(`Taller (${p.height} mm)`); }
+    if (/\bshorter\b/.test(t)) { p.height = Math.round(p.height * 0.8); notes.push(`Shorter (${p.height} mm)`); }
+    if (/\bthicker\b/.test(t)) { if (p.type === "cup") { p.wall += 1; notes.push(`Thicker walls (${p.wall} mm)`); } else { p.thick += 1.5; notes.push(`Thicker (${p.thick} mm)`); } }
+    if (/\bthinner\b/.test(t)) { if (p.type === "cup") { p.wall -= 0.8; notes.push(`Thinner walls (${p.wall.toFixed(1)} mm)`); } else { p.thick -= 1; notes.push(`Thinner (${p.thick} mm)`); } }
+  }
+  if (/steeper|more upright|straighter/.test(t)) { p.angle += 10; notes.push(`More upright (${p.angle}°)`); }
+  if (/lean back|flatter|more tilted|tilt back/.test(t)) { p.angle -= 10; notes.push(`Leans back more (${p.angle}°)`); }
+  // shapes
+  const shapes = [["heart", /heart/], ["star", /star/], ["hex", /hex/], ["circle", /circle|circular|round/], ["rect", /square|rectang|box/]];
+  for (const [s, re] of shapes) if (re.test(t)) {
+    if (p.type === "keychain") { p.shape = s; notes.push(`Shape: ${s === "rect" ? "rounded rectangle" : s === "hex" ? "hexagon" : s}`); }
+    if (p.type === "cup") { p.sides = s === "hex" ? 6 : s === "rect" ? 4 : s === "star" ? 10 : 64; notes.push(`Shape: ${s === "hex" ? "hexagon" : s === "rect" ? "square" : s === "star" ? "10-sided" : "round"} cup`); }
+    break;
+  }
+  if (/octagon/.test(t) && p.type === "cup") { p.sides = 8; notes.push("Shape: octagon cup"); }
+  // hole
+  if (p.type === "keychain") {
+    if (/no hole|without (a |the )?hole|remove (the )?hole/.test(t)) { p.hole = false; notes.push("Removed the key ring hole"); }
+    else if (/hole|key ?ring|loop/.test(t)) { p.hole = true; notes.push("Added a key ring hole"); }
+  }
+  for (const c in COLORS) if (new RegExp("\\b" + c + "\\b").test(t)) { p.color = COLORS[c]; notes.push(`Color: ${c}`); break; }
+  // printer reality checks (teaching moments)
+  const maxMain = p.type === "stand" ? 180 : p.type === "cup" ? 150 : 120;
+  if (p.type === "stand") { if (p.width > maxMain) { p.width = maxMain; warns.push(`That's wider than this printer bed comfortably fits, so I capped it at ${maxMain} mm.`); } if (p.width < 40) { p.width = 40; warns.push("A stand under 40 mm wide won't hold a phone, so I set it to 40 mm."); } }
+  else { if (p.size > maxMain) { warns.push(`${p.size} mm is too big for a ${p.type === "cup" ? "cup" : "keychain"} on a ${BED} mm printer bed. I capped it at ${maxMain} mm.`); p.size = maxMain; } if (p.size < 20) { p.size = 20; warns.push("Under 20 mm is too tiny to hold, so I set it to 20 mm."); } }
+  if (p.type === "keychain" && p.thick < 2) { p.thick = 2; warns.push("Parts under 2 mm thick can snap. I set it to 2 mm, which is still flexible but safe."); }
+  if (p.type === "keychain" && p.thick > 10) { p.thick = 10; warns.push("Over 10 mm is a brick, not a keychain! Capped at 10 mm."); }
+  if (p.type === "stand") { p.thick = clamp(p.thick, 3, 10); if (p.angle > 85 || p.angle < 45) { p.angle = clamp(p.angle, 45, 85); warns.push(`Phones slide off past that, so I kept the angle at ${p.angle}°.`); } }
+  if (p.type === "cup") { if (p.wall < 1.2) { p.wall = 1.2; warns.push("Walls thinner than 1.2 mm (3 nozzle widths) print badly. Set to 1.2 mm."); } p.wall = clamp(p.wall, 1.2, 8); p.height = clamp(p.height, 30, 200); if (p.height > 200) warns.push("Capped height at 200 mm."); }
+  p.thick = Math.round(p.thick * 10) / 10; p.wall = Math.round(p.wall * 10) / 10;
+  return { p, notes, warns };
+}
+function describe(p) {
+  if (p.type === "keychain") return [`Keychain`, `${p.shape === "rect" ? "Rounded rect" : p.shape === "hex" ? "Hexagon" : p.shape[0].toUpperCase() + p.shape.slice(1)}`, `${p.size} mm`, `${p.thick} mm thick`, p.hole ? "Ring hole" : "No hole"];
+  if (p.type === "cup") return [`Pencil cup`, p.sides === 6 ? "Hexagon" : p.sides === 4 ? "Square" : p.sides === 8 ? "Octagon" : p.sides === 10 ? "10-sided" : "Round", `${p.size} mm wide`, `${p.height} mm tall`, `${p.wall} mm walls`];
+  return [`Phone stand`, `${p.width} mm wide`, `${p.angle}° angle`, `${p.thick} mm thick`];
+}
+function volumeMm3(p) {
+  if (p.type === "keychain") { const area = { rect: p.size * p.size * 0.6 * 0.95, circle: Math.PI * (p.size / 2) ** 2, hex: 0.65 * p.size * p.size, star: 0.3 * p.size * p.size, heart: 0.55 * p.size * p.size }[p.shape]; return area * p.thick; }
+  if (p.type === "cup") { const r = p.size / 2; return Math.PI * (r * r - (r - p.wall) ** 2) * p.height + Math.PI * r * r * 2; }
+  return p.width * p.thick * (80 + 12 + 90 + 70);
+}
+
+/* ============ 3D viewer ============ */
+const viewers = [];
+function hasThree() { return typeof THREE !== "undefined"; }
+function shapeOutline(kind, size) {
+  const s = new THREE.Shape(), R = size / 2;
+  if (kind === "circle") s.absarc(0, 0, R, 0, Math.PI * 2, false);
+  else if (kind === "hex" || kind === "star") {
+    const n = kind === "hex" ? 6 : 10;
+    for (let i = 0; i < n; i++) { const a = Math.PI / 2 + i * 2 * Math.PI / n, r = kind === "star" && i % 2 ? R * 0.5 : R; i ? s.lineTo(Math.cos(a) * r, Math.sin(a) * r) : s.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+    s.closePath();
+  } else if (kind === "heart") {
+    const k = size / 34;
+    for (let i = 0; i <= 90; i++) { const u = i / 90 * Math.PI * 2, x = 16 * Math.sin(u) ** 3 * k, y = (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u)) * k + 2 * k; i ? s.lineTo(x, y) : s.moveTo(x, y); }
+  } else {
+    const w = size / 2, h = size * 0.3, r = Math.min(6, h * 0.6);
+    s.moveTo(-w + r, -h); s.lineTo(w - r, -h); s.quadraticCurveTo(w, -h, w, -h + r); s.lineTo(w, h - r); s.quadraticCurveTo(w, h, w - r, h); s.lineTo(-w + r, h); s.quadraticCurveTo(-w, h, -w, h - r); s.lineTo(-w, -h + r); s.quadraticCurveTo(-w, -h, -w + r, -h);
+  }
+  return s;
+}
+function buildModel(p, clip) {
+  const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness: 0.55, metalness: 0.05, clippingPlanes: clip ? [clip] : [], clipShadows: true, side: THREE.DoubleSide });
+  const g = new THREE.Group();
+  if (p.type === "keychain") {
+    const s = shapeOutline(p.shape, p.size);
+    if (p.hole) {
+      const h = new THREE.Path(), r = 2.8;
+      const pos = { rect: [-p.size / 2 + 7, 0], circle: [0, p.size / 2 - 6.5], hex: [0, p.size / 2 - 7.5], star: [0, 0], heart: [-p.size * 0.235, p.size * 0.235] }[p.shape];
+      h.absarc(pos[0], pos[1], r, 0, Math.PI * 2, true); s.holes.push(h);
+    }
+    const geo = new THREE.ExtrudeGeometry(s, { depth: p.thick, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.5, bevelSegments: 2, curveSegments: 28 });
+    geo.rotateX(-Math.PI / 2);
+    g.add(new THREE.Mesh(geo, mat));
+  } else if (p.type === "cup") {
+    const r = p.size / 2, w = p.wall, h = p.height, b = 2;
+    const pts = [[0, 0], [r, 0], [r, h], [r - w, h], [r - w, b], [0, b]].map(a => new THREE.Vector2(a[0], a[1]));
+    const geo = new THREE.LatheGeometry(pts, p.sides, Math.PI / p.sides);
+    g.add(new THREE.Mesh(geo, mat));
+  } else {
+    const W = p.width, t = p.thick, a = (90 - p.angle) * Math.PI / 180;
+    const box = (x, y, z) => new THREE.Mesh(new THREE.BoxGeometry(x, y, z), mat);
+    const base = box(W, t, 80); base.position.set(0, t / 2, 0); g.add(base);
+    const lip = box(W, 14, t); lip.position.set(0, 7, 40 - t / 2); g.add(lip);
+    const pivot = new THREE.Group(); pivot.position.set(0, t, 24); pivot.rotation.x = -a;
+    const back = box(W, 92, t); back.position.set(0, 46, -t / 2); pivot.add(back); g.add(pivot);
+    const mz = 24 - 50 * Math.sin(a) - t, my = t + 50 * Math.cos(a), z0 = -38, y0 = t;
+    const len = Math.hypot(mz - z0, my - y0);
+    const brace = box(W * 0.5, len, t); brace.position.set(0, (my + y0) / 2, (mz + z0) / 2); brace.rotation.x = Math.atan2(mz - z0, my - y0); g.add(brace);
+  }
+  // sit on bed, centered
+  const bb = new THREE.Box3().setFromObject(g), c = bb.getCenter(new THREE.Vector3());
+  g.position.set(-c.x, -bb.min.y, -c.z);
+  const wrap = new THREE.Group(); wrap.add(g);
+  wrap.userData.height = bb.max.y - bb.min.y; wrap.userData.span = Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z, wrap.userData.height);
+  return wrap;
+}
+function makeViewer(el, opts = {}) {
+  if (!hasThree()) { el.innerHTML = '<div style="display:grid;place-items:center;height:100%;padding:16px;text-align:center;color:#5a6a7e">The 3D preview needs an internet connection to load. Your design still updates below.</div>'; return { set() {}, destroy() {}, startPrint() {} }; }
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.localClippingEnabled = true;
+  el.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(38, 4 / 3, 1, 4000);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.85));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(80, 160, 120); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffe2c8, 0.3); fill.position.set(-120, 60, -80); scene.add(fill);
+  const turntable = new THREE.Group(); scene.add(turntable);
+  let bed = null, model = null, rotY = 0.6, rotX = 0.42, dragging = false, last = null, idle = 0, raf = 0, alive = true;
+  const clip = new THREE.Plane(new THREE.Vector3(0, -1, 0), 9999);
+  let nozzle = null, printing = null;
+  function set(p) {
+    if (model) { turntable.remove(model); model.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+    model = buildModel(p, opts.print ? clip : null); turntable.add(model);
+    const span = model.userData.span;
+    if (bed) turntable.remove(bed);
+    const bs = Math.max(60, span * 1.5);
+    bed = new THREE.Group();
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(bs, 2, bs), new THREE.MeshStandardMaterial({ color: 0x2c3e55, roughness: 0.8 }));
+    plate.position.y = -1.01; bed.add(plate);
+    const grid = new THREE.GridHelper(bs, 10, 0x4f6582, 0x40536d); grid.position.y = 0.05; bed.add(grid);
+    turntable.add(bed);
+    const d = span * 2.4 + 30; cam.userData.d = d; cam.userData.ty = model.userData.height * 0.4;
+    if (opts.print) clip.constant = 0;
+  }
+  function frame() {
+    if (!alive) return;
+    const w = el.clientWidth, h = el.clientHeight;
+    if (w && (renderer.domElement.width !== Math.floor(w * renderer.getPixelRatio()))) { renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+    if (!dragging && !printing) { idle++; if (idle > 60) rotY += 0.006; }
+    const d = cam.userData.d || 200, ty = cam.userData.ty || 0;
+    cam.position.set(Math.sin(rotY) * Math.cos(rotX) * d, Math.sin(rotX) * d + ty, Math.cos(rotY) * Math.cos(rotX) * d);
+    cam.lookAt(0, ty, 0);
+    if (printing) printing();
+    renderer.render(scene, cam);
+    raf = requestAnimationFrame(frame);
+  }
+  el.addEventListener("pointerdown", e => { dragging = true; last = [e.clientX, e.clientY]; idle = 0; el.setPointerCapture(e.pointerId); });
+  el.addEventListener("pointermove", e => { if (!dragging) return; rotY -= (e.clientX - last[0]) * 0.01; rotX = clamp(rotX + (e.clientY - last[1]) * 0.006, 0.05, 1.3); last = [e.clientX, e.clientY]; });
+  el.addEventListener("pointerup", () => { dragging = false; idle = 0; });
+  el.addEventListener("pointercancel", () => { dragging = false; });
+  function startPrint(seconds, layer, onTick, onDone) {
+    const H = model.userData.height, layers = Math.max(1, Math.round(H / layer));
+    if (!nozzle) {
+      nozzle = new THREE.Group();
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(3, 7, 16), new THREE.MeshStandardMaterial({ color: 0xc9a227, metalness: 0.6, roughness: 0.3 }));
+      tip.rotation.x = Math.PI; tip.position.y = 3.5; nozzle.add(tip);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 16), new THREE.MeshStandardMaterial({ color: 0x24364d })); head.position.y = 12; nozzle.add(head);
+      turntable.add(nozzle);
+    }
+    const t0 = performance.now(), span = model.userData.span;
+    printing = () => {
+      const f = Math.min(1, (performance.now() - t0) / (seconds * 1000));
+      const L = Math.max(1, Math.ceil(f * layers));
+      clip.constant = L * layer * (H / (layers * layer)) + 0.001;
+      const k = performance.now() / 140;
+      nozzle.position.set(Math.sin(k) * span * 0.35, clip.constant, Math.cos(k * 1.3) * span * 0.35);
+      onTick && onTick(L, layers);
+      if (f >= 1) { printing = null; clip.constant = 9999; turntable.remove(nozzle); nozzle = null; onDone && onDone(); }
+    };
+  }
+  frame();
+  const v = { set, startPrint, destroy() { alive = false; cancelAnimationFrame(raf); renderer.dispose(); } };
+  viewers.push(v);
+  return v;
+}
+function destroyViewers() { while (viewers.length) viewers.pop().destroy(); }
+
+/* ============ art (inline SVG illustrations) ============ */
+const ART = {
+  printer: `<svg viewBox="0 0 320 200"><rect x="40" y="20" width="240" height="14" rx="4" fill="#24364d"/><rect x="40" y="20" width="14" height="160" rx="4" fill="#24364d"/><rect x="266" y="20" width="14" height="160" rx="4" fill="#24364d"/><rect x="30" y="172" width="260" height="16" rx="5" fill="#24364d"/><rect x="70" y="160" width="180" height="12" rx="3" fill="#5a6a7e"/>
+    <rect x="54" y="72" width="212" height="8" rx="3" fill="#8798ab"/><rect x="138" y="58" width="44" height="34" rx="6" fill="#ff7a2f"/><path d="M152 92h16l-8 12z" fill="#c9a227"/>
+    <path d="M160 104v6" stroke="#ff7a2f" stroke-width="3"/>
+    <g fill="#ff7a2f"><rect x="110" y="152" width="100" height="8" rx="2"/><rect x="116" y="144" width="88" height="8" rx="2" opacity=".92"/><rect x="122" y="136" width="76" height="8" rx="2" opacity=".85"/><rect x="128" y="128" width="64" height="8" rx="2" opacity=".78"/><rect x="140" y="120" width="40" height="8" rx="2" opacity=".7"/></g>
+    <circle cx="300" cy="60" r="16" fill="none" stroke="#5a6a7e" stroke-width="5"/><path d="M286 64 C 250 40, 200 40, 182 66" stroke="#ff7a2f" stroke-width="3" fill="none"/>
+    <text x="300" y="98" font-size="11" text-anchor="middle" fill="#5a6a7e" font-family="Lexend,sans-serif">filament</text><text x="160" y="50" font-size="11" text-anchor="middle" fill="#5a6a7e" font-family="Lexend,sans-serif">hot nozzle ~200°C</text></svg>`,
+  layers: `<svg viewBox="0 0 320 170"><g font-family="Lexend,sans-serif" font-size="12" fill="#5a6a7e"><text x="20" y="20">Each layer ≈ 0.2 mm</text></g>
+    ${Array.from({ length: 10 }, (_, i) => `<rect x="${60 + i * 4}" y="${150 - i * 12}" width="${200 - i * 8}" height="10" rx="3" fill="#ff7a2f" opacity="${1 - i * 0.05}"/>`).join("")}
+    <path d="M285 150V42" stroke="#24364d" stroke-width="2" marker-end="url(#ar)"/><defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0l10 5-10 5z" fill="#24364d"/></marker></defs>
+    <text x="292" y="100" font-size="12" fill="#24364d" font-family="Lexend,sans-serif">up</text></svg>`,
+  tooBig: `<svg viewBox="0 0 320 180" font-family="Lexend,sans-serif"><rect x="70" y="120" width="180" height="16" rx="4" fill="#24364d"/><text x="160" y="155" font-size="12" text-anchor="middle" fill="#5a6a7e">printer bed: 220 × 220 mm</text>
+    <rect x="30" y="20" width="260" height="100" rx="10" fill="#ff7a2f" opacity=".85"/><text x="160" y="76" font-size="15" text-anchor="middle" fill="#fff" font-weight="600">pencil cup: 300 mm wide</text></svg>`,
+  thin: `<svg viewBox="0 0 320 180" font-family="Lexend,sans-serif"><path d="M110 30v120h100V30" fill="none" stroke="#ff7a2f" stroke-width="1.5"/><rect x="110" y="148" width="100" height="4" fill="#ff7a2f"/>
+    <circle cx="210" cy="60" r="16" fill="none" stroke="#e5484d" stroke-width="2"/><text x="236" y="64" font-size="12" fill="#e5484d">wall: 0.2 mm</text><text x="160" y="172" font-size="12" text-anchor="middle" fill="#5a6a7e">nozzle is 0.4 mm wide</text></svg>`,
+  floating: `<svg viewBox="0 0 320 180" font-family="Lexend,sans-serif"><rect x="60" y="150" width="200" height="12" rx="3" fill="#24364d"/><rect x="100" y="110" width="30" height="40" fill="#ff7a2f"/><rect x="190" y="110" width="30" height="40" fill="#ff7a2f"/>
+    <rect x="80" y="40" width="160" height="30" rx="4" fill="#ff7a2f"/><text x="160" y="60" font-size="13" text-anchor="middle" fill="#fff" font-weight="600">MY ROOM</text>
+    <path d="M100 76 v28 M220 76 v28" stroke="#e5484d" stroke-width="2" stroke-dasharray="4 4"/><text x="160" y="96" font-size="12" text-anchor="middle" fill="#e5484d">gap: nothing underneath</text></svg>`,
+  hotcup: `<svg viewBox="0 0 320 180" font-family="Lexend,sans-serif"><path d="M110 60h90l-8 90h-74z" fill="#3b7ddd"/><path d="M200 75h16a14 14 0 0 1 0 28h-20" fill="none" stroke="#3b7ddd" stroke-width="8"/>
+    <path d="M135 50c-6-10 6-14 0-26M155 50c-6-10 6-14 0-26M175 50c-6-10 6-14 0-26" stroke="#9aa5b1" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <rect x="12" y="120" width="96" height="44" rx="10" fill="#fff" stroke="#d6e0ea" stroke-width="2"/><text x="60" y="138" font-size="10.5" text-anchor="middle" fill="#1b2838">AI says: "PLA is</text><text x="60" y="153" font-size="10.5" text-anchor="middle" fill="#1b2838">great for hot tea!"</text></svg>`,
+  privacy: `<svg viewBox="0 0 320 180" font-family="Lexend,sans-serif"><rect x="40" y="20" width="240" height="140" rx="14" fill="#fff" stroke="#d6e0ea" stroke-width="2"/><text x="60" y="48" font-size="13" font-weight="600" fill="#1b2838">FreeModelMaker AI</text>
+    <text x="60" y="76" font-size="12" fill="#5a6a7e">To make your name tag, enter:</text>
+    <rect x="60" y="86" width="200" height="18" rx="4" fill="#eef3f8"/><text x="66" y="99" font-size="11" fill="#5a6a7e">Full name + school name</text>
+    <rect x="60" y="110" width="200" height="18" rx="4" fill="#eef3f8"/><text x="66" y="123" font-size="11" fill="#5a6a7e">Home address</text>
+    <rect x="60" y="134" width="200" height="18" rx="4" fill="#eef3f8"/><text x="66" y="147" font-size="11" fill="#5a6a7e">Upload a selfie</text></svg>`
+};
+
+/* ============ curriculum: Unit 1 ============ */
+const LESSONS = [
+  { id: "l1", title: "How 3D printers build", icon: "layers", xp: 20, skill: "Understands how 3D printers build objects layer by layer", talk: "Ask them: why can't a printer make a mushroom shape without help?", steps: [
+    { t: "info", kicker: "Meet the machine", h: "A 3D printer is a robot with a hot glue gun", body: "It melts a plastic string called <b>filament</b> at about <b>200°C</b>, then squeezes it through a nozzle only <b>0.4 mm</b> wide. It draws one flat slice of your object, moves up a tiny bit, and draws the next.", art: "printer" },
+    { t: "info", kicker: "Layer by layer", h: "Everything is a stack of thin slices", body: "A normal layer is about <b>0.2 mm</b> tall, thinner than two sheets of paper. A 2 cm tall toy is <b>100 layers</b> stacked on top of each other.", art: "layers" },
+    { t: "quiz", q: "Your keychain is 4 mm thick. With 0.2 mm layers, how many layers will the printer make?", o: ["2 layers", "20 layers", "200 layers"], a: 1, why: "4 ÷ 0.2 = 20. Makers do this math to guess how long a print will take." },
+    { t: "quiz", q: "Which filament do most beginners use?", o: ["PLA, a plastic made from plants like corn", "Liquid steel", "Melted glass"], a: 0, why: "PLA is cheap, low-smell and easy to print. It's made from plant starch." },
+    { t: "quiz", q: "Which shape is hardest to print without extra help?", o: ["A cube", "A mushroom with a wide cap", "A cylinder"], a: 1, why: "The cap hangs out in the air. Printers can't print on nothing, so they add temporary supports under parts that stick out more than about 45°." }
+  ]},
+  { id: "l2", title: "From idea to object", icon: "route", xp: 20, skill: "Breaks a project into steps: idea, design, check, print", talk: "Ask them to walk you through the 6 steps from idea to printed object.", steps: [
+    { t: "info", kicker: "Where AI helps", h: "AI is your super-fast design partner", body: "AI tools can brainstorm ideas, turn your words into 3D models (called <b>text-to-3D</b>), write design code, and spot problems. But <b>you're the designer</b>: you decide what to make and whether the AI got it right." },
+    { t: "order", q: "Put the maker's steps in order.", items: ["Have an idea", "Describe it to the AI", "AI generates a 3D model", "Check and fix the model", "Slice it into layers", "Print it!"] },
+    { t: "quiz", q: "The AI just made a model of your phone stand. What should you do first?", o: ["Print it right away", "Check that the size and angle fit your phone", "Ask the AI to make 10 more"], a: 1, why: "Checking takes 1 minute. A failed print can waste 2 hours and a lot of filament." }
+  ]},
+  { id: "l3", title: "Prompt like a maker", icon: "chat", xp: 30, skill: "Writes clear, specific instructions for AI tools", talk: "Ask them what the 5 ingredients of a good AI prompt are.", steps: [
+    { t: "info", kicker: "Prompt power", h: "AI does what you say, not what you mean", body: "A <b>prompt</b> is the instruction you give an AI. Great design prompts have 5 ingredients:<br><br><b>1. What</b> it is &nbsp; <b>2. Size</b> in mm &nbsp; <b>3. Shape</b> and details &nbsp; <b>4. Why</b> you need it &nbsp; <b>5. Print rules</b> like a flat bottom" },
+    { t: "quiz", q: "Which prompt will get a better keychain?", o: ["\"make a keychain\"", "\"Design a 50 mm heart-shaped keychain, 4 mm thick, with a 5 mm hole at the top for a key ring and a flat back so it prints without supports.\""], a: 1, why: "The second one has all 5 ingredients. The first one makes the AI guess everything." },
+    { t: "prompt", task: "Write a prompt for an AI design tool to make a <b>pencil holder</b> for your desk." }
+  ]},
+  { id: "l4", title: "AI design studio", icon: "cube", xp: 30, skill: "Improves a design step by step using feedback", talk: "Ask them to show you the keychain they designed and what they changed.", steps: [
+    { t: "info", kicker: "Studio time", h: "Describe it. See it. Make it better.", body: "Real text-to-3D tools turn your words into a model you can spin around. Bolt's studio is a practice version. Type a change, watch the model update, and keep refining. Pros call this <b>iterating</b>." },
+    { t: "studio" },
+    { t: "quiz", q: "You typed \"make it bigger\" and the AI made it 10 times bigger. What would have helped?", o: ["Typing in all capitals", "Giving an exact size, like \"60 mm wide\"", "Asking more politely"], a: 1, why: "Numbers with units leave nothing to guess. \"Bigger\" could mean anything." }
+  ]},
+  { id: "l5", title: "Spot the AI's mistakes", icon: "search", xp: 30, skill: "Checks AI output for mistakes before trusting it", skill2: "Knows not to share personal info with AI tools", talk: "Ask them: what would you do if an AI app asked for your address?", steps: [
+    { t: "info", kicker: "Detective mode", h: "AI is fast, but it isn't always right", body: "AI can sound totally confident and still be wrong. Good makers check every result. Let's find what went wrong in 4 real kinds of AI mistakes." },
+    { t: "quiz", art: "tooBig", q: "You asked for a pencil cup. The AI made this. What's the problem?", o: ["The color is wrong", "It's bigger than the printer bed, so it can't print", "Nothing, print it!"], a: 1, why: "Always compare the model's size to your printer's build area. Then ask the AI for an exact size that fits." },
+    { t: "quiz", art: "thin", q: "The AI's model has walls 0.2 mm thick. What will happen?", o: ["It'll be super strong", "The walls are thinner than the nozzle line, so they'll be missing or break", "It will print faster and be perfect"], a: 1, why: "A 0.4 mm nozzle can't draw a 0.2 mm wall. Aim for walls at least 1.2 mm, about 3 lines thick." },
+    { t: "quiz", art: "floating", q: "The AI made a door sign. What's wrong?", o: ["The sign part is floating in mid-air", "The letters are too big", "Signs can't be 3D printed"], a: 0, why: "Every layer needs something underneath it. Connect the sign to its legs, or turn on supports." },
+    { t: "quiz", art: "hotcup", q: "The AI says your PLA cup is great for hot tea. Should you trust it?", o: ["Yes, AI knows everything", "No. PLA softens around 60°C, and printed cups aren't food safe. Check a trusted source.", "Only if the AI says it twice"], a: 1, why: "AI can state wrong facts with confidence. For anything about safety, check a trusted source or ask an adult." },
+    { t: "quiz", art: "privacy", q: "A free AI site wants this info to make a name tag. What should you do?", o: ["Fill it all in, it's free!", "Only type the name you want on the tag, and ask a parent before signing up", "Upload the selfie but skip the address"], a: 1, why: "Your address, school and photos are private. A tool only needs the text you want printed." }
+  ]},
+  { id: "l6", title: "Slice and print", icon: "play", xp: 40, skill: "Chooses print settings and understands the trade-offs", talk: "Ask them: what's the trade-off between a fast print and a strong print?", steps: [
+    { t: "info", kicker: "Last step", h: "The slicer turns a model into instructions", body: "A <b>slicer</b> cuts your model into layers and writes thousands of moves for the printer, called <b>G-code</b>. You choose the settings. Every choice is a trade-off between speed, strength, and smoothness." },
+    { t: "slicer" },
+    { t: "print" }
+  ]}
+];
+const SOON = [
+  { icon: "chat", t: "Talk to AI: Prompting basics", d: "Get great answers from chatbots for any project." },
+  { icon: "shield", t: "Safe and smart with AI", d: "Privacy, deepfakes, scams, and when to ask an adult." },
+  { icon: "search", t: "Is that true? Fact-checking AI", d: "Catch made-up facts and find trusted sources." },
+  { icon: "book", t: "AI study buddy, not a cheat code", d: "Use AI to understand homework, not skip it." },
+  { icon: "palette", t: "Create with AI", d: "Art, music and stories, plus who owns what you make." },
+  { icon: "brain", t: "How AI learns", d: "Data, patterns and bias, explained with games." },
+  { icon: "code", t: "Build a bot", d: "Your first program, written with an AI helper." }
+];
+
+/* ============ shell ============ */
+const app = $("#app");
+let view = "map";
+function topBar(inLesson) {
+  return `<header class="top">
+    <div class="brand">${mascot().replace('class="mascot"', 'width="34" height="34"')}Spark<b>Lab</b></div>
+    <span class="pill" title="Day streak">${IC.flame}<span id="st">${S.streak}</span></span>
+    <span class="pill" title="XP">${IC.gem}<span id="xpv">${S.xp}</span></span>
+    ${inLesson ? "" : `<button class="iconbtn" id="settings" aria-label="Settings">${IC.gear}</button>`}
+  </header>`;
+}
+function go(v) {
+  destroyViewers(); view = v; window.scrollTo(0, 0);
+  $("#nav").hidden = v === "lesson";
+  $("#nav-learn").setAttribute("aria-current", v === "map");
+  $("#nav-parent").setAttribute("aria-current", v === "parent");
+  if (v === "map") renderMap(); else if (v === "parent") renderParent();
+}
+$("#nav-learn").onclick = () => go("map");
+$("#nav-parent").onclick = () => go("parent");
+
+function renderMap() {
+  const doneCount = LESSONS.filter(l => S.done[l.id]).length;
+  const nextIdx = LESSONS.findIndex(l => !S.done[l.id]);
+  const offsets = [0, 60, 90, 60, 0, -60];
+  app.innerHTML = topBar() + `
+    <section class="hero">${mascot()}
+      <div><h1>${S.name ? "Hey " + esc(S.name) + "!" : "Hey maker!"}</h1>
+      <p>${doneCount === LESSONS.length ? "You finished Unit 1. New units are on the way." : doneCount ? `${doneCount} of ${LESSONS.length} lessons done. Keep your streak alive!` : "Learn to use AI to design things you can actually hold."}</p></div>
+    </section>
+    <div class="unit"><small>Unit 1 · ${doneCount}/${LESSONS.length} done</small><h2>Make it real: AI + 3D printing</h2><p>Go from an idea in your head to a printed object, with AI as your design partner.</p></div>
+    <div class="path">${LESSONS.map((l, i) => `
+      <div class="nodewrap" style="transform:translateX(${offsets[i]}px)">
+        <button class="node ${S.done[l.id] ? "" : i === nextIdx ? "next" : "todo"}" data-l="${i}" aria-label="${esc(l.title)}">
+          ${i === nextIdx ? `<span class="bubble">${doneCount ? "NEXT" : "START"}</span>` : ""}
+          ${S.done[l.id] ? IC.check : IC[l.icon]}
+        </button>
+        <div class="lbl">${esc(l.title)}</div><div class="xp">+${l.xp} XP</div>
+      </div>`).join("")}
+    </div>
+    <h2 class="soon-h">More units coming soon</h2>
+    <p class="soon-sub">Each unit mixes short lessons, hands-on challenges and a live AI coach.</p>
+    <div class="soon">${SOON.map(s => `<div class="c"><div class="ic">${IC[s.icon]}</div><div><h3>${esc(s.t)}<span class="tag">Soon</span></h3><p>${esc(s.d)}</p></div></div>`).join("")}</div>`;
+  app.querySelectorAll(".node").forEach(b => b.onclick = () => startLesson(+b.dataset.l));
+  $("#settings").onclick = openSettings;
+}
+
+/* ============ lesson engine ============ */
+let L = null;
+function startLesson(i) {
+  destroyViewers(); view = "lesson"; $("#nav").hidden = true;
+  L = { i, lesson: LESSONS[i], step: 0, correct: 0, answered: 0, t0: Date.now() };
+  renderStep();
+}
+function renderStep() {
+  destroyViewers(); window.scrollTo(0, 0);
+  const st = L.lesson.steps[L.step], pct = (L.step / L.lesson.steps.length) * 100;
+  app.innerHTML = topBar(true) + `<div class="lesson">
+    <div class="lhead"><button class="iconbtn" id="quit" aria-label="Leave lesson">${IC.x}</button><div class="bar"><i style="width:${pct}%"></i></div></div>
+    <div class="lbody" id="lbody"></div>
+    <div class="lfoot" id="lfoot"></div></div>`;
+  $("#quit").onclick = () => go("map");
+  const body = $("#lbody"), foot = $("#lfoot");
+  STEP[st.t](st, body, foot);
+}
+function footBtn(foot, label, { disabled = false, cls = "", fb = "" } = {}) {
+  foot.innerHTML = fb + `<button class="btn wide ${cls}" id="fbtn" ${disabled ? "disabled" : ""}>${label}</button>`;
+  return $("#fbtn", foot);
+}
+function next() { L.step++; if (L.step >= L.lesson.steps.length) finishLesson(); else renderStep(); }
+function feedback(ok, why) {
+  return `<div class="fb ${ok ? "good" : "bad"}"><h3>${ok ? ["Nice!", "Correct!", "You got it!", "Maker brain!"][Math.floor(Math.random() * 4)] : "Not quite"}</h3><p>${why}</p></div>`;
+}
+const STEP = {
+  info(st, body, foot) {
+    body.innerHTML = `<div class="kicker">${st.kicker}</div><h2>${st.h}</h2>${st.art ? `<div class="art">${ART[st.art]}</div>` : ""}<p class="txt">${st.body}</p>`;
+    footBtn(foot, "Continue").onclick = next;
+  },
+  quiz(st, body, foot) {
+    let pick = null;
+    body.innerHTML = `${st.art ? `<div class="art">${ART[st.art]}</div>` : ""}<h2>${esc(st.q)}</h2><div class="opts">${st.o.map((o, i) => `<button class="opt" data-i="${i}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>`;
+    const btn = footBtn(foot, "Check", { disabled: true });
+    body.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      if (btn.dataset.done) return;
+      pick = +b.dataset.i; body.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b)); btn.disabled = false;
+    });
+    btn.onclick = () => {
+      const ok = pick === st.a; L.answered++; if (ok) L.correct++;
+      body.querySelectorAll(".opt").forEach((x, i) => { if (i === st.a) x.classList.add("right"); else if (i === pick) x.classList.add("wrong"); });
+      const b2 = footBtn(foot, "Continue", { cls: ok ? "teal" : "berry", fb: feedback(ok, esc(st.why)) }); b2.dataset.done = 1;
+      body.querySelectorAll(".opt").forEach(x => x.disabled = true);
+      b2.onclick = next;
+    };
+  },
+  order(st, body, foot) {
+    const shuffled = st.items.map((x, i) => i).sort(() => Math.random() - 0.5);
+    if (shuffled.every((x, i) => x === i)) shuffled.reverse();
+    const placed = [];
+    body.innerHTML = `<h2>${esc(st.q)}</h2><p class="txt" style="color:var(--muted)">Tap the steps in the right order. Tap a placed step to undo.</p><div class="slots" id="slots"></div><div class="pool" id="pool"></div>`;
+    const btn = footBtn(foot, "Check", { disabled: true });
+    function draw(result) {
+      $("#slots").innerHTML = st.items.map((_, i) => `<div class="slot ${result ? (placed[i] === i ? "right" : "wrong") : ""}"><span class="n">${i + 1}</span>${placed[i] !== undefined ? `<button data-p="${i}">${esc(st.items[placed[i]])}</button>` : "Tap a step below"}</div>`).join("");
+      $("#pool").innerHTML = shuffled.filter(x => !placed.includes(x)).map(x => `<button class="chip" data-x="${x}">${esc(st.items[x])}</button>`).join("");
+      if (result) return;
+      $("#pool").querySelectorAll(".chip").forEach(c => c.onclick = () => { placed.push(+c.dataset.x); draw(); });
+      $("#slots").querySelectorAll("[data-p]").forEach(c => c.onclick = () => { placed.splice(+c.dataset.p, 1); draw(); });
+      btn.disabled = placed.length !== st.items.length;
+    }
+    draw();
+    btn.onclick = () => {
+      const ok = placed.every((x, i) => x === i); L.answered++; if (ok) L.correct++;
+      draw(true);
+      footBtn(foot, "Continue", { cls: ok ? "teal" : "berry", fb: feedback(ok, ok ? "That's exactly how real makers work. Notice that checking comes before printing!" : "Here's the right order: " + st.items.map((s, i) => `${i + 1}. ${esc(s)}`).join(" · ")) }).onclick = next;
+    };
+  },
+  prompt(st, body, foot) {
+    const prev = S.prompt && S.prompt.text || "";
+    body.innerHTML = `<div class="kicker">Your turn</div><h2>Write a design prompt</h2>
+      <div class="say">${mascot("think")}<div class="sp">${st.task} Use the 5 ingredients. I'll coach you!</div></div>
+      <textarea id="ptext" rows="4" maxlength="800" placeholder="Design a ...">${esc(prev)}</textarea>
+      <div class="row" style="align-items:center;justify-content:space-between"><button class="btn small" id="ask">Get feedback</button>${aiStatusHtml()}</div>
+      <div id="coach"></div>`;
+    const btn = footBtn(foot, "Continue", { disabled: true });
+    btn.onclick = next;
+    $("#ask").onclick = async () => {
+      const text = $("#ptext").value.trim();
+      if (text.length < 3) { $("#coach").innerHTML = `<div class="fb bad"><p>Type your prompt first. Start with "Design a pencil holder..."</p></div>`; return; }
+      $("#ask").disabled = true; $("#ask").textContent = "Bolt is reading...";
+      $("#coach").innerHTML = `<div class="coach"><div class="say">${mascot("think")}<div class="sp">Hmm, let me look at that...</div></div></div>`;
+      const r = await coachPrompt(text);
+      $("#ask").disabled = false; $("#ask").textContent = "Try again";
+      L.answered++; if (r.score >= 3) L.correct++;
+      const best = S.prompt && S.prompt.score > r.score ? S.prompt : { text, score: r.score, improved: r.improved };
+      S.prompt = best; save();
+      $("#coach").innerHTML = `<div class="coach">
+        <div class="score">${"★".repeat(r.score)}<span style="color:var(--locked)">${"★".repeat(5 - r.score)}</span> <span>${r.score}/5</span></div>
+        <p>${esc(r.praise)}</p>
+        <ul class="checks">${r.hits.map(h => `<li><span class="d ${h.ok ? "y" : "n"}">${h.ok ? "✓" : ""}</span>${esc(h.label)}</li>`).join("")}</ul>
+        ${r.tips.length ? `<div><b>Try this:</b> ${r.tips.map(esc).join(" ")}</div>` : ""}
+        <div><b>${r.score >= 4 ? "Another way to say it:" : "Example of a 5-star prompt:"}</b><div class="better">${esc(r.improved)}</div></div>
+        <span class="aistat${r.source === "ai" ? " on" : ""}"><i></i> ${r.source === "ai" ? "Feedback from live AI" : "Feedback from offline coach"}</span>
+      </div>`;
+      btn.disabled = false;
+    };
+  },
+  studio(st, body, foot) {
+    let p = { ...S.design }, changes = 0;
+    const suggestions = { keychain: ["make it a heart", "60 mm wide", "make it blue", "thicker", "no hole", "a star shape"], cup: ["hexagon shape", "make it taller", "80 mm wide", "thicker walls", "make it green"], stand: ["more upright", "lean back", "100 mm wide", "make it navy", "thicker"] };
+    body.innerHTML = `<div class="kicker">Design studio</div><h2>Design a keychain for a friend</h2>
+      <p class="txt" style="color:var(--muted)">Type a change and press Go. Make at least 3 changes. You can also ask for a <b>phone stand</b> or a <b>pencil cup</b>.</p>
+      <div class="viewer" id="vw"><span class="hint">Drag to spin</span></div>
+      <div class="specs" id="specs"></div>
+      <div class="row"><input type="text" id="cmd" maxlength="160" placeholder="e.g. make it a 60 mm blue heart" aria-label="Describe a change"><button class="btn small" id="go">Go</button></div>
+      <div class="pool" id="sugg"></div>
+      <div class="log" id="log"></div>`;
+    const v = makeViewer($("#vw"));
+    const btn = footBtn(foot, "Make 3 changes to continue", { disabled: true });
+    btn.onclick = () => { S.design = p; save(); next(); };
+    function draw() {
+      v.set(p);
+      $("#specs").innerHTML = describe(p).map(d => `<span class="spec">${esc(d)}</span>`).join("") + `<span class="spec">≈ ${Math.max(1, Math.round(volumeMm3(p) / 1000 * 1.24 * 0.45))} g of PLA</span>`;
+      $("#sugg").innerHTML = suggestions[p.type].map(s => `<button class="chip mini">${esc(s)}</button>`).join("");
+      $("#sugg").querySelectorAll(".chip").forEach(c => c.onclick = () => { $("#cmd").value = c.textContent; apply(); });
+    }
+    function apply() {
+      const text = $("#cmd").value.trim(); if (!text) return;
+      const r = interpret(text, p);
+      const lines = r.notes.length ? r.notes : [];
+      $("#log").innerHTML = (lines.length ? `<div>Bolt understood: ${lines.map(esc).join(", ")}</div>` : `<div class="warn">Bolt didn't catch a change there. Try a size in mm, a shape, a color, "thicker", or "bigger".</div>`) + r.warns.map(w => `<div class="warn">${esc(w)}</div>`).join("");
+      if (lines.length || r.warns.length) { p = r.p; changes++; S.design = p; save(); draw(); }
+      $("#cmd").value = "";
+      btn.disabled = changes < 3; btn.textContent = changes < 3 ? `Make ${3 - changes} more change${3 - changes > 1 ? "s" : ""}` : "Continue";
+    }
+    $("#go").onclick = apply;
+    $("#cmd").addEventListener("keydown", e => { if (e.key === "Enter") apply(); });
+    draw();
+  },
+  slicer(st, body, foot) {
+    const p = S.design;
+    let cfg = { layer: 0.2, infill: 20, supports: false };
+    body.innerHTML = `<div class="kicker">Slicer settings</div><h2>Your ${p.type === "cup" ? "pencil cup" : p.type === "stand" ? "phone stand" : "keychain"} will live on a backpack. Make it strong, but don't wait all day.</h2>
+      <div class="sl"><label for="ly">Layer height <span id="lyv"></span></label><input type="range" id="ly" min="0" max="2" step="1" value="1"><small style="color:var(--muted)">Thin layers look smoother but take longer.</small></div>
+      <div class="sl"><label for="inf">Infill (how solid the inside is) <span id="infv"></span></label><input type="range" id="inf" min="10" max="100" step="5" value="20"><small style="color:var(--muted)">More infill is stronger, heavier and slower.</small></div>
+      <label class="toggle"><input type="checkbox" id="sup"> Add supports</label>
+      <div class="meters" id="meters"></div>
+      <div id="sfb"></div>`;
+    const LAY = [0.12, 0.2, 0.28];
+    const btn = footBtn(foot, "Send to printer");
+    function calc() {
+      const grams = volumeMm3(p) / 1000 * 1.24 * (0.3 + 0.7 * cfg.infill / 100) * (cfg.supports ? 1.15 : 1);
+      const mins = Math.round(grams * 4.2 * (0.2 / cfg.layer) + 6 + (cfg.supports ? 8 : 0));
+      const strength = clamp(Math.round(30 + cfg.infill * 0.6 + (p.thick || p.wall || 3) * 2), 0, 100);
+      const smooth = Math.round({ 0.12: 95, 0.2: 75, 0.28: 50 }[cfg.layer]);
+      return { grams: Math.max(1, Math.round(grams)), mins, strength, smooth };
+    }
+    function draw() {
+      $("#lyv").textContent = cfg.layer + " mm"; $("#infv").textContent = cfg.infill + "%";
+      const c = calc(); L.cfg = cfg; L.calc = c;
+      const fmt = m => m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} m` : `${m} min`;
+      $("#meters").innerHTML = `
+        <div class="meter"><small>Print time</small><b>${fmt(c.mins)}</b></div>
+        <div class="meter"><small>Filament</small><b>${c.grams} g</b></div>
+        <div class="meter"><small>Strength</small><b>${c.strength}</b><div class="mb"><i style="width:${c.strength}%"></i></div></div>
+        <div class="meter"><small>Smoothness</small><b>${c.smooth}</b><div class="mb"><i style="width:${c.smooth}%"></i></div></div>`;
+      const tip = cfg.supports ? "Your design sits flat with nothing hanging in the air, so supports just waste plastic. Try turning them off." :
+        cfg.infill < 20 ? "Under 20% infill, a backpack keychain could crack when it gets bumped." :
+        cfg.infill > 60 ? "Super strong, but it takes much longer and uses more filament. Somewhere around 25 to 40% is the sweet spot." :
+        cfg.layer === 0.12 ? "Very smooth, but slow. For a keychain, 0.2 mm looks great and prints faster." : "Great balance of strength and speed. That's what a pro would pick!";
+      const good = !cfg.supports && cfg.infill >= 20 && cfg.infill <= 60 && cfg.layer !== 0.12;
+      $("#sfb").innerHTML = `<div class="say">${mascot(good ? "happy" : "think")}<div class="sp">${tip}</div></div>`;
+    }
+    $("#ly").oninput = e => { cfg.layer = LAY[+e.target.value]; draw(); };
+    $("#inf").oninput = e => { cfg.infill = +e.target.value; draw(); };
+    $("#sup").onchange = e => { cfg.supports = e.target.checked; draw(); };
+    draw();
+    btn.onclick = () => { const good = !cfg.supports && cfg.infill >= 20 && cfg.infill <= 60; L.answered++; if (good) L.correct++; next(); };
+  },
+  print(st, body, foot) {
+    const p = S.design, layer = (L.cfg && L.cfg.layer) || 0.2;
+    body.innerHTML = `<div class="kicker">Printing</div><h2>Watch your design print, layer by layer</h2>
+      <div class="viewer" id="vw"><span class="hud" id="hud">Ready</span><span class="hint">Drag to spin</span></div>
+      <div class="specs">${describe(p).map(d => `<span class="spec">${esc(d)}</span>`).join("")}<span class="spec">${layer} mm layers</span></div>
+      <div class="say">${mascot("wow")}<div class="sp" id="psay">This is sped up a lot. A real print of this would take about ${L.calc ? L.calc.mins : 30} minutes.</div></div>`;
+    const v = makeViewer($("#vw"), { print: true }); v.set(p);
+    const btn = footBtn(foot, "Start print");
+    btn.onclick = () => {
+      btn.disabled = true; btn.textContent = "Printing...";
+      if (!hasThree()) { btn.disabled = false; btn.textContent = "Finish lesson"; btn.onclick = next; return; }
+      v.startPrint(7, layer * 4, (l, n) => { $("#hud").textContent = `Layer ${l} / ${n}`; }, () => {
+        $("#hud").textContent = "Done!"; $("#psay").textContent = "It's real! You went from an idea to an object, with AI helping and you in charge.";
+        btn.disabled = false; btn.className = "btn wide teal"; btn.textContent = "Finish lesson"; btn.onclick = next;
+      });
+    };
+  }
+};
+
+function finishLesson() {
+  const l = L.lesson, first = !S.done[l.id];
+  const mins = Math.max(1, Math.round((Date.now() - L.t0) / 60000));
+  const gained = first ? l.xp : Math.round(l.xp / 2);
+  S.xp += gained; S.done[l.id] = true; S.correct += L.correct; S.answered += L.answered;
+  const tk = todayKey();
+  S.minutes[tk] = (S.minutes[tk] || 0) + mins;
+  if (S.lastDay !== tk) { const y = todayKey(new Date(Date.now() - 864e5)); S.streak = S.lastDay === y ? S.streak + 1 : 1; S.lastDay = tk; }
+  save();
+  const acc = L.answered ? Math.round(L.correct / L.answered * 100) : 100;
+  const allDone = LESSONS.every(x => S.done[x.id]);
+  app.innerHTML = topBar(true) + `<div class="done">${mascot("wow")}
+    <h2>${allDone ? "Unit complete!" : "Lesson complete!"}</h2>
+    <p class="txt">${allDone ? "You earned the <b>Maker Level 1</b> badge. You can design, check, and print things with AI." : esc(l.skill) + ". Nice work!"}</p>
+    <div class="stats"><div class="stat xp"><small>XP earned</small><b>+${gained}</b></div><div class="stat st"><small>Streak</small><b>${S.streak} day${S.streak === 1 ? "" : "s"}</b></div><div class="stat ac"><small>Accuracy</small><b>${acc}%</b></div></div>
+    <button class="btn wide" id="cont" style="margin-top:14px">Continue</button></div>`;
+  $("#cont").onclick = () => go("map");
+  confetti();
+}
+
+/* ============ parent view ============ */
+function renderParent() {
+  const name = S.name || "Your child";
+  const done = LESSONS.filter(l => S.done[l.id]);
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(Date.now() - (6 - i) * 864e5); return { k: todayKey(d), lbl: d.toLocaleDateString(undefined, { weekday: "short" }).slice(0, 2) }; });
+  const mins = days.map(d => S.minutes[d.k] || 0), maxM = Math.max(10, ...mins), weekTotal = mins.reduce((a, b) => a + b, 0);
+  const acc = S.answered ? Math.round(S.correct / S.answered * 100) : null;
+  const skills = LESSONS.flatMap(l => [{ s: l.skill, got: !!S.done[l.id], from: l.title }].concat(l.skill2 ? [{ s: l.skill2, got: !!S.done[l.id], from: l.title }] : []));
+  app.innerHTML = topBar() + `<div class="pv">
+    <div><h1>${esc(name)}'s progress</h1><p class="sub">Parent view · Unit 1: AI + 3D printing</p>
+      <div class="namebox"><label for="nm" class="sub">Child's name</label><input type="text" id="nm" value="${esc(S.name)}" maxlength="24" placeholder="Name"></div></div>
+    <div class="kpis">
+      <div class="kpi"><small>Streak</small><b>${S.streak}</b> <span>day${S.streak === 1 ? "" : "s"}</span></div>
+      <div class="kpi"><small>This week</small><b>${weekTotal}</b> <span>minutes</span></div>
+      <div class="kpi"><small>Lessons</small><b>${done.length}/${LESSONS.length}</b> <span>in Unit 1</span></div>
+      <div class="kpi"><small>Accuracy</small><b>${acc === null ? "–" : acc + "%"}</b> <span>first try</span></div>
+    </div>
+    <div class="card"><h2>Minutes learning</h2><div class="week">${days.map((d, i) => `<div><span>${mins[i] || ""}</span><i class="${mins[i] ? "" : "zero"}" style="height:${Math.round(mins[i] / maxM * 80)}%"></i>${d.lbl}</div>`).join("")}</div></div>
+    <div class="card"><h2>Skills ${esc(S.name || "they've")} ${S.name ? "has" : ""} practiced</h2><ul class="skills">${skills.map(k => `<li class="${k.got ? "got" : ""}"><span class="d">${k.got ? "✓" : ""}</span><div>${esc(k.s)}<small>${esc(k.from)}</small></div></li>`).join("")}</ul></div>
+    <div class="card"><h2>Their work</h2>
+      ${S.prompt ? `<p class="sub">Best AI prompt (${S.prompt.score}/5 from the coach)</p><div class="quote">"${esc(S.prompt.text)}"</div>` : `<p class="sub">Their AI prompts will show up here after the "Prompt like a maker" lesson.</p>`}
+      ${S.done.l4 ? `<p class="sub" style="margin-top:12px">Their latest 3D design</p><div class="viewer" id="pvw" style="aspect-ratio:16/9;margin-top:6px"><span class="hint">Drag to spin</span></div><div class="specs" style="margin-top:8px">${describe(S.design).map(d => `<span class="spec">${esc(d)}</span>`).join("")}</div>` : ""}
+    </div>
+    <div class="card"><h2>Talk about it at dinner</h2>${done.length ? `<ol class="starters">${done.map(l => `<li>${esc(l.talk)}</li>`).join("")}</ol>` : `<p class="sub">After each lesson we'll suggest a question to ask, so they can teach you what they learned.</p>`}</div>
+    <div class="card"><h2>Why parents choose SparkLab</h2><ul class="why">
+      <li><b>Five minutes a day</b>Short lessons build a habit, not a screen-time binge.</li>
+      <li><b>Real skills, not just answers</b>Kids learn to direct AI, question it, and check its work.</li>
+      <li><b>Safety built in</b>No chat with strangers, no ads, and lessons on privacy and trusting AI.</li>
+      <li><b>From screen to real world</b>Projects end in things they can print and hold.</li></ul></div>
+    <div class="row" style="flex-wrap:wrap"><button class="btn ghost small" id="demo">Load sample progress</button><button class="btn ghost small" id="reset">Reset progress</button></div>
+    <p class="sub">Sample progress fills this page with example data for a demo.</p>
+  </div>`;
+  if (S.done.l4) makeViewer($("#pvw")).set(S.design);
+  $("#nm").onchange = e => { S.name = e.target.value.trim().slice(0, 24); save(); renderParent(); };
+  $("#settings").onclick = openSettings;
+  $("#demo").onclick = () => {
+    const m = {}; [12, 8, 0, 15, 10, 6, 9].forEach((v, i) => { m[todayKey(new Date(Date.now() - (6 - i) * 864e5))] = v; });
+    S = Object.assign(fresh(), { name: S.name || "Maya", xp: 100, streak: 6, lastDay: todayKey(), done: { l1: true, l2: true, l3: true, l4: true }, correct: 12, answered: 14, minutes: m, sample: true,
+      prompt: { text: "Design a hexagon pencil holder 80 mm wide and 100 mm tall for my desk, with a divider for markers. Flat bottom and 2 mm walls so it prints without supports.", score: 5 },
+      design: { ...DEFAULT_DESIGN, shape: "heart", size: 55, color: "#3b7ddd" } });
+    save(); renderParent();
+  };
+  $("#reset").onclick = function () {
+    if (this.dataset.sure) { const n = S.name; S = fresh(); S.name = n; save(); renderParent(); return; }
+    this.dataset.sure = 1; this.textContent = "Tap again to reset";
+  };
+}
+
+/* ============ settings + onboarding ============ */
+function openSettings() {
+  const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="sheet" role="dialog" aria-label="Settings"><h2>Settings</h2>
+    <div><b>Live AI coach</b> ${aiStatusHtml()}<p class="sub">${sampleFn ? "Bolt is using Claude through this page. No key needed." : "SparkLab works fully offline. To try live AI feedback on prompts, paste an Anthropic API key. It stays in this browser only. For demos, use a key with a low spending limit."}</p></div>
+    ${sampleFn ? "" : `<input type="password" id="key" placeholder="sk-ant-..." value="${esc(apiKey)}" autocomplete="off" aria-label="Anthropic API key">`}
+    <div class="row"><button class="btn small" id="saveS">Save</button><button class="btn ghost small" id="closeS">Close</button></div></div>`;
+  document.body.appendChild(m);
+  const close = () => m.remove();
+  m.onclick = e => { if (e.target === m) close(); };
+  $("#closeS", m).onclick = close;
+  $("#saveS", m).onclick = () => { const k = $("#key", m); if (k) { apiKey = k.value.trim(); store.set("sparklab_key", apiKey); } close(); refreshAiStatus(); };
+}
+function onboarding() {
+  const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="sheet center" role="dialog" aria-label="Welcome">${mascot("wow").replace('class="mascot"', 'class="mascot" width="110" height="110"')}
+    <h2>Hi, I'm Bolt!</h2><p class="sub">I'll help you learn to design real things with AI, five minutes at a time. What should I call you?</p>
+    <input type="text" id="oname" maxlength="24" placeholder="Your first name" aria-label="Your first name">
+    <button class="btn wide" id="ogo">Let's go</button></div>`;
+  document.body.appendChild(m);
+  const goNow = () => { S.name = $("#oname", m).value.trim().slice(0, 24); save(); m.remove(); go("map"); };
+  $("#ogo", m).onclick = goNow; $("#oname", m).addEventListener("keydown", e => { if (e.key === "Enter") goNow(); });
+}
+
+/* ============ confetti ============ */
+function confetti() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("#confetti"), x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
+  const cols = ["#ff7a2f", "#ffc83d", "#0fa38f", "#3b7ddd", "#f472b6"];
+  const ps = Array.from({ length: 120 }, () => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * 0.5, vx: (Math.random() - 0.5) * 3, vy: 2 + Math.random() * 4, r: Math.random() * 6, s: 5 + Math.random() * 6, c: cols[Math.floor(Math.random() * 5)] }));
+  let n = 0;
+  (function tick() {
+    x.clearRect(0, 0, c.width, c.height);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.r += 0.1; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); });
+    if (++n < 180) requestAnimationFrame(tick); else x.clearRect(0, 0, c.width, c.height);
+  })();
+}
+
+go("map");
+if (!S.name && !S.xp) onboarding();
+</script>
+
+</body></html>
